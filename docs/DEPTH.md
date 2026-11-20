@@ -10,7 +10,7 @@
 | M2 项目映射 | 查看并复算项目映射 | `/api/m2_mapping` | `app/modules/m2_mapping/rules.py` | `tests/test_mapping.py` |
 | M3 限量选版 | 查看并复算限量选版 | `/api/m3_versions` | `app/modules/m3_versions/rules.py` | `tests/test_versions.py` |
 | M4 检出量换算 | 查看并复算检出量换算 | `/api/m4_segments` | `app/modules/m4_segments/rules.py` | `tests/test_segments.py` |
-| M5 复检裁决 | 查看并复算复检裁决 | `/api/m5_calculate` | `app/modules/m5_calculate/rules.py` | `tests/test_calculate.py` |
+| M5 复检裁决 | 查看并复算复检裁决 | `/api/m5_calculate` | `app/modules/m5_calculate/rules.py`、`scope.py` | `tests/test_calculate.py`、`tests/test_scope.py` |
 | M6 批次判级 | 查看并复算批次判级 | `/api/m6_reconcile` | `app/modules/m6_reconcile/compare.py` | `tests/test_reconcile.py` |
 | M7 报告归档 | 查看并复算报告归档 | `/api/m7_archive` | `app/modules/m7_archive/export_out.py` | `tests/test_archive.py` |
 
@@ -32,6 +32,11 @@
 | TRAP-15 | ug/kg与mg/kg | 差1000倍 | 浓度统一mg/kg | `app/modules/m4_segments/rules.py` | `tests/test_segments.py::test_unit_conversion` |
 | TRAP-25 | 标准时间边界 | 双版或错版 | 采样日半开区间选版 | `app/modules/m3_versions/standards.py` | `tests/test_versions.py::test_halfopen_effective` |
 | TRAP-20 | 复检引用环 | 遍历无法结束 | 引用路径检测 | `app/modules/m5_calculate/rules.py` | `tests/test_calculate.py::test_cycle_rejected` |
+| TRAP-27 | 合样复检被当成总样新结论 | 复检放行未复检地块 | 完成地块与总样的覆盖裁决 | `app/modules/m5_calculate/scope.py` | `tests/test_scope.py::test_composite_retest_narrows_only_its_parcel` |
+| TRAP-28 | 按总样判失败拖住其余地块 | 全样维持旧结论 | 逐地块采信与判级 | `app/modules/m5_calculate/scope.py`、`app/modules/m6_reconcile/compare.py` | `tests/test_scope.py::test_untested_analyte_keeps_composite_scope` |
+| TRAP-29 | 合样关系或复检证据不全 | 部分地块被放行 | 不可发布并保留旧版 | `app/modules/m5_calculate/scope.py`、`app/store.py` | `tests/test_scope.py::test_broken_composition_is_not_publishable` |
+| TRAP-30 | 同源重跑改变已确认范围 | 增删地块或换范围 | 来源指纹与发布台账 | `app/store.py` | `tests/test_scope.py::test_same_source_scope_conflict_retains_previous` |
+| TRAP-31 | 归档丢失原始总样或被替代复检 | 只留最终结论 | 报告级 ADOPTED/RETAINED/EXCLUDED | `app/modules/m5_calculate/rules.py`、`app/modules/m7_archive/export_out.py` | `tests/test_scope.py::test_original_composite_and_retest_are_both_retained` |
 
 ## 对账规则
 

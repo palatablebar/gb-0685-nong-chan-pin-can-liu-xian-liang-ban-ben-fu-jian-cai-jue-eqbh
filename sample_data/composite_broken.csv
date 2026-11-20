@@ -1,0 +1,4 @@
+﻿id,sample_id,batch,product,analyte,method,version,sampled,reported,result,unit,lod,relation,note,parcel
+20001,C001,BC01,苹果,P01,LC-MS/MS,1,2026-08-01,2026-08-02,0.009,mg/kg,0.001,,合样总样初检,
+20002,C001,BC01,苹果,P01,LC-MS/MS,2,2026-08-01,2026-08-03,0.004,mg/kg,0.001,20001,未登记地块复检,B9
+20003,C001,BC01,苹果,P02,GC-MS,1,2026-08-01,2026-08-02,<0.01,mg/kg,0.01,,另一残留项目,

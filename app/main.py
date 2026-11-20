@@ -20,7 +20,8 @@ def create_app():
     def health():return jsonify(status='ok')
     @app.post('/api/runs')
     def submit():
-        content,params=payload();state=run(content,params);return jsonify(store.save(state['run_id'],state))
+        content,params,sample=payload();state=run(content,params,sample=sample)
+        return jsonify(store.save(state['run_id'],state))
     @app.get('/api/runs')
     def list_runs():return jsonify(store.history())
     @app.get('/api/runs/<run_id>')
@@ -29,11 +30,18 @@ def create_app():
     def review(run_id):
         data=request.get_json(silent=True) or {}
         if not isinstance(data.get('version'),int):raise DomainError('VERSION','请提交复核版本')
+        # A run whose scope decision is blocked may not be signed off; the
+        # previous published version stays authoritative.
+        current=store.get(run_id)
+        if not current.get('archive',{}).get('ready'):raise DomainError('UNPUBLISHABLE','范围裁决未通过，旧版结果保留',409)
         return jsonify(store.review(run_id,data['version'],data.get('decision')))
     @app.get('/api/archive/<run_id>/export.csv')
     def download(run_id):
         state=store.get(run_id)
         if not state.get('reconcile',{}).get('balanced'):raise DomainError('UNBALANCED','对账未平')
+        # An unpublished result is evidence only; it may not be signed off as
+        # the adoptable version.
+        if not state.get('archive',{}).get('ready'):raise DomainError('UNPUBLISHABLE','范围裁决未通过，保留旧版结果',409)
         return Response(bundle(state),mimetype='text/csv; charset=utf-8',headers={'Content-Disposition':'attachment; filename=evidence.csv'})
     with app.app_context():
         if not store.history():
